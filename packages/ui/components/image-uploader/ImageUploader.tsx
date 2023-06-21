@@ -2,13 +2,15 @@
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
+
 import Cropper from "react-easy-crop";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 
 import { Button, Dialog, DialogClose, DialogContent, DialogTrigger } from "../..";
 import { showToast } from "../toast";
+// react dropzone
+import { useDropzone } from "react-dropzone";
 
 type ReadAsMethod = "readAsText" | "readAsDataURL" | "readAsArrayBuffer" | "readAsBinaryString";
 
@@ -148,6 +150,7 @@ export default function ImageUploader({
     }
   };
 
+  // Drop and drag function
   const onDrop = useCallback((acceptedFiles: string | any[]) => {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
@@ -193,6 +196,7 @@ export default function ImageUploader({
         </div>
         <div className="mb-4">
           <div className="cropper mt-6 flex flex-col items-center justify-center p-8">
+              {/* Drag and drop area */}
             {!result && (
               <div
                 className={`bg-muted flex h-40 max-h-40 w-40 items-center justify-start rounded-full ${
