@@ -1,6 +1,8 @@
+/* eslint-disable prettier/prettier */
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import Cropper from "react-easy-crop";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -88,7 +90,7 @@ function CropContainer({
   };
 
   return (
-    <div className="crop-container h-40 max-h-40 w-40 rounded-full">
+    <div className="crop-container mb-4 h-40 max-h-40 w-40 rounded-full">
       <div className="relative h-40 w-40 rounded-full">
         <Cropper
           image={imageSrc}
@@ -146,6 +148,14 @@ export default function ImageUploader({
     }
   };
 
+  const onDrop = useCallback((acceptedFiles: string | any[]) => {
+    if (acceptedFiles.length > 0) {
+      setFile(acceptedFiles[0]);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
   const showCroppedImage = useCallback(
     async (croppedAreaPixels: Area | null) => {
       try {
@@ -184,7 +194,13 @@ export default function ImageUploader({
         <div className="mb-4">
           <div className="cropper mt-6 flex flex-col items-center justify-center p-8">
             {!result && (
-              <div className="bg-muted flex h-20 max-h-20 w-20 items-center justify-start rounded-full">
+              <div
+                className={`bg-muted flex h-40 max-h-40 w-40 items-center justify-start rounded-full ${
+                  isDragActive ? "bg-primary-100" : ""
+                }`}
+                style={{ border: "2px dashed gray" }}
+                {...getRootProps()}>
+                <input {...getInputProps()} />
                 {!imageSrc && (
                   <p className="text-emphasis w-full text-center text-sm sm:text-xs">
                     {t("no_target", { target })}
@@ -192,12 +208,19 @@ export default function ImageUploader({
                 )}
                 {imageSrc && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img className="h-20 w-20 rounded-full" src={imageSrc} alt={target} />
+                  <img
+                    className="mx-auto flex h-20 w-20 items-center justify-center rounded-full"
+                    src={imageSrc}
+                    alt={target}
+                  />
                 )}
               </div>
             )}
+
             {result && <CropContainer imageSrc={result as string} onCropComplete={setCroppedAreaPixels} />}
-            <label className="bg-subtle hover:bg-muted hover:text-emphasis border-subtle text-default mt-8 rounded-sm border px-3 py-1 text-xs font-medium leading-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
+            <p className="text-default mt-4 text-xs font-medium leading-4">{t("Drag and drop image")}</p>
+            <p className="mt-4 text-xs font-bold text-black">{t("OR")}</p>
+            <label className="bg-subtle hover:bg-muted hover:text-emphasis border-subtle text-default mt-4 rounded-sm border px-3 py-1 text-xs font-medium leading-4 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1">
               <input
                 onInput={onInputFile}
                 type="file"
